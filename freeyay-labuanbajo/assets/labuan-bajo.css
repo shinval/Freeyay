@@ -1,0 +1,192 @@
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ===== Halaman: background gradasi blur + poster di tengah ===== */
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  padding: 24px 12px 14px;
+  font-family: "Segoe UI", system-ui, -apple-system, Roboto, sans-serif;
+  color: #fff;
+  background-color: #15525f;
+  background-image:
+    radial-gradient(circle at 19% 10%, rgba(252, 226, 160, .95) 0, rgba(232, 205, 150, .6) 9%, rgba(200, 185, 140, .25) 22%, transparent 36%),
+    radial-gradient(ellipse 45% 55% at 100% 100%, rgba(236, 160, 85, .95) 0, rgba(200, 150, 95, .45) 45%, transparent 75%),
+    radial-gradient(ellipse 55% 60% at 0% 72%, #0d4254 0, transparent 70%),
+    radial-gradient(ellipse 50% 50% at 62% 8%, #135566 0, transparent 70%),
+    linear-gradient(120deg, #6c8a73 0%, #2a6467 30%, #165566 55%, #4f7268 78%, #c79459 100%);
+  background-attachment: fixed;
+}
+
+.page-head { text-align: center; text-shadow: 0 1px 6px rgba(0, 0, 0, .25); }
+.page-head h1 { font-size: clamp(16px, 2.2vw, 22px); font-weight: 700; letter-spacing: .2px; }
+.page-head p  { margin-top: 4px; font-size: clamp(10px, 1.1vw, 12px); opacity: .85; }
+
+/* Poster di tengah, selalu muat di layar */
+.stage { width: min(94vw, calc((100vh - 110px) * 1113 / 1413)); }
+
+.poster {
+  border-radius: 16px;
+  box-shadow: 0 18px 50px rgba(0, 0, 0, .35), 0 4px 12px rgba(0, 0, 0, .2);
+}
+
+html { min-height: 100%; }
+
+
+
+.poster {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1113 / 1413;
+  overflow: hidden;
+}
+
+.poster-img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* Area klik: koordinat dalam piksel poster asli (1113 x 1413), diubah ke persen */
+.hot {
+  position: absolute;
+  left:   calc(var(--x) / 1113 * 100%);
+  top:    calc(var(--y) / 1413 * 100%);
+  width:  calc(var(--w) / 1113 * 100%);
+  height: calc(var(--h) / 1413 * 100%);
+  transition: background-color .15s ease;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.hot.pill { border-radius: 999px; }
+
+.hot:hover,
+.hot:focus-visible {
+  background-color: rgba(255, 255, 255, .18);
+  outline: none;
+}
+
+/* ===== Papan kayu: efek zoom ===== */
+.sign {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;            /* yang bisa diklik hanya bentuk papannya */
+  transform-origin: 99% var(--oy); /* membesar ke arah kiri, dari sisi tiang */
+  transition: transform .3s cubic-bezier(.25, .9, .3, 1.2), filter .3s ease;
+  -webkit-tap-highlight-color: transparent;
+  outline: none;
+}
+
+.board {
+  position: absolute;
+  inset: 0;
+  background: url("img/poster-labuan-bajo.jpg") center / 100% 100% no-repeat;
+  clip-path: var(--clip);
+  pointer-events: auto;
+  cursor: pointer;
+}
+
+.sign:hover,
+.sign:focus-visible {
+  z-index: 5;
+  transform: scale(1.15);
+  filter: drop-shadow(0 12px 14px rgba(0, 0, 0, .45));
+}
+
+.sign:active {
+  transition-duration: .1s;
+  transform: scale(1.08);
+  filter: drop-shadow(0 5px 6px rgba(0, 0, 0, .4));
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .sign { transition: none; }
+}
+
+/* bentuk tiap papan (koordinat dari poster 1113 x 1413) */
+.sign-eat { --clip: polygon(80.593% 54.989%, 82.839% 51.309%, 100.000% 48.125%, 100.000% 55.697%, 84.007% 58.103%); --oy: 53.645%; }
+.sign-shop { --clip: polygon(80.503% 61.571%, 82.839% 58.386%, 100.000% 55.697%, 100.000% 63.411%, 84.007% 65.180%); --oy: 60.849%; }
+.sign-play { --clip: polygon(82.120% 69.356%, 84.007% 65.817%, 100.000% 63.623%, 100.000% 70.842%, 84.636% 71.904%); --oy: 68.309%; }
+.sign-enjoy { --clip: polygon(79.964% 75.513%, 82.210% 72.682%, 100.000% 70.842%, 100.000% 77.990%, 83.288% 79.052%); --oy: 75.216%; }
+
+/* toa berdenyut (lihat effects.css) */
+.mega { --clip: polygon(27.314% 27.035%, 28.392% 27.176%, 29.200% 28.309%, 29.380% 29.512%, 29.111% 30.573%, 28.392% 31.069%, 27.493% 30.998%, 27.493% 32.130%, 26.505% 32.130%, 26.056% 31.281%, 24.888% 30.432%, 24.259% 29.512%, 24.438% 28.804%, 25.337% 28.662%, 26.595% 27.742%); transform-origin: 26.95% 29.58%; }
+
+
+/* ===== Copywriting promo di bawah poster ===== */
+.promo-copy {
+  width: min(94vw, 540px);
+  margin: 18px auto 4px;
+  text-align: center;
+  color: #fff;
+}
+.promo-copy .tagline {
+  display: inline-block;
+  padding: 6px 16px;
+  border-radius: 999px;
+  background: rgba(255, 248, 231, .18);
+  border: 1px solid rgba(255, 255, 255, .35);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: .14em;
+  text-transform: uppercase;
+}
+.promo-copy h2 {
+  margin: 12px 0 8px;
+  font-size: clamp(20px, 3.4vw, 27px);
+  font-weight: 800;
+  line-height: 1.2;
+  text-shadow: 0 2px 10px rgba(0, 0, 0, .25);
+}
+.promo-copy h2 .hi { color: #ffd84a; }
+.promo-chips {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 8px;
+  margin: 0 auto 18px;
+}
+.promo-chips .chip {
+  padding: 7px 14px;
+  border-radius: 999px;
+  background: rgba(255, 248, 231, .16);
+  border: 1px solid rgba(255, 255, 255, .3);
+  font-size: 13px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.promo-copy .lead {
+  margin: 0 auto 16px;
+  max-width: 460px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: rgba(255, 255, 255, .9);
+}
+.promo-copy .cta-main {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 26px;
+  border-radius: 999px;
+  background: linear-gradient(135deg, #ffb01f, #ff6a00);
+  color: #2b1600;
+  text-decoration: none;
+  font-weight: 800;
+  font-size: 15px;
+  box-shadow: 0 8px 22px rgba(255, 120, 0, .35);
+  transition: transform .15s ease;
+}
+.promo-copy .cta-main:hover { transform: translateY(-2px); }
+.promo-copy .fineprint {
+  margin-top: 12px;
+  font-size: 11px;
+  color: rgba(255, 255, 255, .6);
+}
+

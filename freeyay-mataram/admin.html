@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Admin – FreeYay Mataram</title>
+  <style>
+    * { box-sizing: border-box; }
+    body {
+      margin: 0; font-family: "Segoe UI", system-ui, sans-serif; color: #fff;
+      background: linear-gradient(160deg, #ec1c24 0%, #c40000 55%, #8f0000 100%);
+      background-attachment: fixed;
+    }
+    .bg-circles { position: fixed; inset: 0; overflow: hidden; z-index: 0; pointer-events: none; }
+    .bg-circles span { position: absolute; border-radius: 50%; display: block; }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 24px 16px 60px; position: relative; z-index: 1; }
+    .brand { display: flex; align-items: center; gap: 10px; }
+    .brand .logo { width: 34px; height: 34px; border-radius: 8px; background: #fff; color: #e60000; font-weight: 800; font-size: 20px; display: grid; place-items: center; }
+    h1 { font-size: 22px; margin: 0; }
+    .sub { opacity: .9; font-size: 13px; margin: 4px 0 20px; }
+    .card { background: #ffffff; border: 1px solid #ffffff; border-radius: 14px; padding: 18px; margin-bottom: 16px; color: #26272b; box-shadow: 0 10px 30px rgba(120,0,0,.22); }
+    label { display: block; font-size: 12px; font-weight: 700; margin: 12px 0 5px; color: #7a1414; }
+    input, textarea, select {
+      width: 100%; padding: 10px 12px; border-radius: 9px; border: 1px solid #e3c4c4;
+      background: #fff7f7; color: #26272b; font: inherit; font-size: 14px;
+    }
+    input:focus, textarea:focus { outline: none; border-color: #e60000; background: #fff; }
+    textarea { resize: vertical; min-height: 58px; line-height: 1.4; }
+    .row { display: flex; gap: 8px; }
+    .row input { flex: 1; }
+    button { font: inherit; font-weight: 700; border: 0; border-radius: 999px; cursor: pointer; padding: 11px 20px; }
+    .btn-primary { background: linear-gradient(135deg, #ff3b3b, #d10000); color: #fff; box-shadow: 0 6px 16px rgba(209,0,0,.3); }
+    .btn-ghost { background: #ffe3e3; color: #c40000; }
+    .btn-sm { padding: 7px 12px; font-size: 13px; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 14px; }
+    .tab { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.45); color: #fff; border-radius: 999px; padding: 8px 16px; cursor: pointer; font-weight: 700; }
+    .tab.active { background: #fff; color: #c40000; border-color: #fff; }
+    .redeem-item { display: flex; gap: 8px; margin-bottom: 8px; }
+    .redeem-item input { flex: 1; }
+    .msg { padding: 10px 14px; border-radius: 9px; margin: 12px 0; font-size: 14px; display: none; }
+    .msg.ok { background: #e7f8ec; color: #166534; display: block; }
+    .msg.err { background: #fde8e8; color: #991b1b; display: block; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; margin-bottom: 18px; }
+    .hidden { display: none; }
+    a.view { color: #c40000; font-size: 13px; font-weight: 700; text-decoration: none; }
+    .hint { font-size: 11px; color: #8a8a8a; margin-top: 4px; }
+    .btn-primary.saved { background: #16a34a; }
+    .toast {
+      position: fixed; left: 50%; bottom: 26px; transform: translateX(-50%) translateY(24px);
+      background: #14532d; color: #c7f9cc; padding: 14px 22px; border-radius: 12px;
+      font-weight: 700; font-size: 14px; box-shadow: 0 12px 34px rgba(0,0,0,.45);
+      opacity: 0; pointer-events: none; transition: opacity .25s ease, transform .25s ease;
+      z-index: 100; display: flex; align-items: center; gap: 10px; max-width: 90vw;
+    }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    .toast.err { background: #5b1a1a; color: #ffd0d0; }
+    .toast .ic { font-size: 17px; }
+    /* ---- analitik ---- */
+    .viewswitch { display: flex; gap: 8px; margin: 2px 0 16px; }
+    .viewswitch button { background: rgba(255,255,255,.14); border: 1px solid rgba(255,255,255,.5); color: #fff; }
+    .viewswitch button.active { background: #fff; color: #c40000; }
+    .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 16px; }
+    .stat { background: #fff; border-radius: 12px; padding: 14px; color: #26272b; box-shadow: 0 10px 30px rgba(120,0,0,.22); }
+    .stat .n { font-size: 30px; font-weight: 800; color: #c40000; line-height: 1.1; }
+    .stat .l { font-size: 12px; color: #6b7280; margin-top: 4px; font-weight: 700; text-transform: uppercase; letter-spacing: .03em; }
+    .an-controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; margin-bottom: 14px; }
+    .an-controls select { padding: 9px 12px; border-radius: 9px; border: 1px solid #e3b7b7; font: inherit; }
+    .an-card h3 { margin: 2px 0 10px; font-size: 15px; color: #7a1414; }
+    .bars { display: flex; flex-direction: column; gap: 8px; }
+    .bar-row { display: grid; grid-template-columns: 120px 1fr 44px; gap: 10px; align-items: center; font-size: 13px; color: #26272b; }
+    .bar-row .nm { font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .bar-track { display: block; background: #f3d6d6; border-radius: 999px; height: 16px; overflow: hidden; }
+    .bar-fill { display: block; height: 100%; min-width: 2px; background: linear-gradient(90deg, #ff3b3b, #c40000); border-radius: 999px; }
+    .bar-row .v { text-align: right; font-weight: 800; color: #c40000; }
+    .an-empty { color: #8a8a8a; font-size: 13px; padding: 8px 0; }
+    table.an { width: 100%; border-collapse: collapse; font-size: 13px; }
+    table.an th, table.an td { text-align: left; padding: 8px 6px; border-bottom: 1px solid #f0dada; }
+    table.an th { color: #7a1414; font-size: 11px; text-transform: uppercase; letter-spacing: .03em; }
+    table.an td.num { text-align: right; font-weight: 800; color: #c40000; }
+    .pw-wrap { position: relative; }
+    .pw-wrap input { padding-right: 84px; }
+    .pw-toggle { position: absolute; right: 6px; top: 50%; transform: translateY(-50%);
+      border: 0; background: transparent; color: #7a1414; font: 700 12px/1 inherit; padding: 6px 8px;
+      border-radius: 8px; cursor: pointer; }
+    .pw-toggle:hover { background: rgba(230, 0, 0, .08); }
+  </style>
+</head>
+<body>
+<div class="bg-circles" aria-hidden="true">
+  <span style="width:260px;height:260px;top:-70px;left:-60px;background:rgba(255,255,255,.08);"></span>
+  <span style="width:130px;height:130px;top:70px;right:40px;border:2px solid rgba(255,255,255,.3);"></span>
+  <span style="width:80px;height:80px;top:220px;right:150px;background:rgba(255,255,255,.1);"></span>
+  <span style="width:320px;height:320px;bottom:-110px;right:-80px;background:rgba(255,255,255,.06);"></span>
+  <span style="width:110px;height:110px;bottom:120px;left:40px;border:2px solid rgba(255,255,255,.25);"></span>
+  <span style="width:180px;height:180px;top:330px;left:-50px;background:rgba(255,255,255,.05);"></span>
+  <span style="width:60px;height:60px;bottom:60px;left:300px;background:rgba(255,255,255,.12);"></span>
+  <span style="width:200px;height:200px;bottom:30px;left:160px;border:2px solid rgba(255,255,255,.18);"></span>
+</div>
+  <div class="wrap">
+    <div class="brand"><span class="logo">T</span><h1>Admin FreeYay Mataram</h1></div>
+    <div style="height:18px"></div>
+
+    <!-- LOGIN -->
+    <div id="login" class="card">
+      <label>Email</label>
+      <input id="email" type="email" autocomplete="username" placeholder="email admin">
+      <label>Password</label>
+      <div class="pw-wrap">
+        <input id="password" type="password" autocomplete="current-password" placeholder="password">
+        <button type="button" class="pw-toggle" id="pwToggle" aria-label="Tampilkan password" aria-pressed="false">Lihat</button>
+      </div>
+      <div id="loginMsg" class="msg"></div>
+      <div style="margin-top:14px"><button class="btn-primary" id="loginBtn">Masuk</button></div>
+    </div>
+
+    <!-- EDITOR -->
+    <div id="editor" class="hidden">
+      <div class="topbar">
+        <span id="who" class="sub" style="margin:0"></span>
+        <button class="btn-ghost btn-sm" id="logoutBtn">Keluar</button>
+      </div>
+      <div class="viewswitch">
+        <button type="button" id="swContent" class="active">✏️ Konten</button>
+        <button type="button" id="swStats">📊 Analitik</button>
+      </div>
+
+      <!-- ==== KONTEN ==== -->
+      <div id="contentView">
+      <div class="tabs" id="tabs"></div>
+      <div id="formMsg" class="msg"></div>
+      <div class="card">
+        <form id="form">
+          <label>Kategori (judul kecil)</label><input name="category">
+          <label>Nama merchant</label><input name="merchant">
+          <label>Gambar</label>
+          <input name="image"><div class="hint">URL atau path gambar. Atau upload file baru di bawah.</div>
+          <div class="row" style="margin-top:8px; align-items:center">
+            <input type="file" id="imgFile" accept="image/*" style="flex:1">
+            <button type="button" class="btn-ghost btn-sm" id="uploadBtn">Upload</button>
+          </div>
+          <img id="imgPreview" alt="" style="max-width:100%; margin-top:10px; border-radius:10px; display:none">
+          <div class="hint">Setelah upload, klik <b>Simpan</b> supaya tersimpan.</div>
+          <label>Warna aksen (hex)</label><input name="accent"><div class="hint">mis. #7a4a1e</div>
+          <label>Judul (headline)</label><input name="title">
+          <label>Kalimat 1 (intro)</label><textarea name="intro"></textarea>
+          <label>Kalimat 2 (benefit/diskon)</label><textarea name="benefit"></textarea>
+          <label>Kalimat 3 (ajakan)</label><textarea name="extra"></textarea>
+          <label>Alamat</label><input name="address">
+          <label>Kalimat penutup</label><input name="closing">
+          <label>Syarat &amp; periode (fineprint)</label><textarea name="fineprint"></textarea>
+
+          <label>Tombol Redeem</label>
+          <div id="redeemList"></div>
+          <button type="button" class="btn-ghost btn-sm" id="addRedeem">+ Tambah tombol</button>
+
+          <div style="margin-top:18px; display:flex; gap:10px; align-items:center">
+            <button type="submit" class="btn-primary">Simpan</button>
+            <a class="view" id="viewLink" href="#" target="_blank">Lihat halaman ↗</a>
+          </div>
+        </form>
+      </div>
+      </div><!-- /contentView -->
+
+      <!-- ==== ANALITIK ==== -->
+      <div id="statsView" class="hidden">
+        <div class="an-controls">
+          <label class="sub" style="margin:0">Rentang:</label>
+          <select id="anRange">
+            <option value="7">7 hari terakhir</option>
+            <option value="30" selected>30 hari terakhir</option>
+            <option value="90">90 hari terakhir</option>
+            <option value="3650">Semua</option>
+          </select>
+          <button type="button" class="btn-ghost btn-sm" id="anRefresh">↻ Muat ulang</button>
+          <span id="anInfo" class="sub" style="margin:0"></span>
+        </div>
+
+        <div class="stat-row">
+          <div class="stat"><div class="n" id="stViews">–</div><div class="l">Kunjungan poster</div></div>
+          <div class="stat"><div class="n" id="stSigns">–</div><div class="l">Klik papan kayu</div></div>
+          <div class="stat"><div class="n" id="stRedeem">–</div><div class="l">Klik redeem</div></div>
+        </div>
+
+        <div class="card an-card">
+          <h3>Kunjungan per halaman</h3>
+          <div class="bars" id="anPages"></div>
+        </div>
+
+        <div class="card an-card">
+          <h3>Klik Redeem terbanyak</h3>
+          <table class="an"><thead><tr><th>Tombol</th><th>Halaman</th><th class="num">Klik</th></tr></thead>
+          <tbody id="anRedeem"></tbody></table>
+        </div>
+
+        <div class="card an-card">
+          <h3>Aktivitas 7 hari terakhir</h3>
+          <div class="bars" id="anDaily"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="assets/sb.js"></script>
+  <script>
+  (function () {
+    var H = { apikey: SB_KEY, "Content-Type": "application/json" };
+    var token = sessionStorage.getItem("fy_token") || null;
+    var keys = ["mtr-eat", "mtr-shop", "mtr-play", "mtr-enjoy"];  // key khusus Mataram
+    var data = {};      // key -> row
+    var current = "mtr-eat";
+    function short(k) { return String(k || "").replace(/^mtr-/, ""); }
+
+    var $ = function (id) { return document.getElementById(id); };
+    function msg(el, text, ok) { el.textContent = text; el.className = "msg " + (ok ? "ok" : "err"); }
+
+    // Notifikasi pop-up (toast)
+    var toastEl;
+    function toast(text, ok) {
+      if (!toastEl) { toastEl = document.createElement("div"); document.body.appendChild(toastEl); }
+      toastEl.className = "toast " + (ok ? "" : "err");
+      toastEl.innerHTML = '<span class="ic">' + (ok ? "✓" : "⚠") + "</span>" + text;
+      requestAnimationFrame(function () { toastEl.classList.add("show"); });
+      clearTimeout(toastEl._t);
+      toastEl._t = setTimeout(function () { toastEl.classList.remove("show"); }, 2800);
+    }
+
+    // ---------- LOGIN ----------
+    $("loginBtn").onclick = function () {
+      var email = $("email").value.trim(), pass = $("password").value;
+      if (!email || !pass) { msg($("loginMsg"), "Isi email dan password.", false); return; }
+      $("loginBtn").disabled = true;
+      fetch(SB_URL + "/auth/v1/token?grant_type=password", {
+        method: "POST", headers: H, body: JSON.stringify({ email: email, password: pass })
+      }).then(function (r) { return r.json(); }).then(function (j) {
+        $("loginBtn").disabled = false;
+        if (j.access_token) { token = j.access_token; sessionStorage.setItem("fy_token", token); start(email); }
+        else { msg($("loginMsg"), "Login gagal: " + (j.error_description || j.msg || "cek email/password"), false); }
+      }).catch(function () { $("loginBtn").disabled = false; msg($("loginMsg"), "Tidak bisa terhubung.", false); });
+    };
+    // Tampilkan / sembunyikan password
+    $("pwToggle").onclick = function () {
+      var p = $("password"), show = p.type === "password";
+      p.type = show ? "text" : "password";
+      this.textContent = show ? "Sembunyi" : "Lihat";
+      this.setAttribute("aria-pressed", show ? "true" : "false");
+      this.setAttribute("aria-label", show ? "Sembunyikan password" : "Tampilkan password");
+      p.focus();
+    };
+
+    $("password").addEventListener("keydown", function (e) { if (e.key === "Enter") $("loginBtn").click(); });
+
+    $("logoutBtn").onclick = function () { sessionStorage.removeItem("fy_token"); location.reload(); };
+
+    // ---------- LOAD ----------
+    function start(email) {
+      $("login").classList.add("hidden");
+      $("editor").classList.remove("hidden");
+      if (email) $("who").textContent = "Masuk sebagai " + email;
+      // tabs
+      $("tabs").innerHTML = keys.map(function (k) {
+        return '<div class="tab" data-k="' + k + '">' + short(k).toUpperCase() + "</div>";
+      }).join("");
+      Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) {
+        t.onclick = function () { current = t.getAttribute("data-k"); fill(); markTab(); };
+      });
+      fetch(SB_URL + "/rest/v1/promos?select=*&key=like.mtr-*&order=sort", { headers: { apikey: SB_KEY } })
+        .then(function (r) { return r.json(); })
+        .then(function (rows) { rows.forEach(function (r) { data[r.key] = r; }); fill(); markTab(); })
+        .catch(function () { msg($("formMsg"), "Gagal memuat data.", false); });
+    }
+    function markTab() {
+      Array.prototype.forEach.call(document.querySelectorAll(".tab"), function (t) {
+        t.classList.toggle("active", t.getAttribute("data-k") === current);
+      });
+    }
+
+    // ---------- SWITCH KONTEN / ANALITIK ----------
+    var statsLoaded = false;
+    function setView(which) {
+      var stats = which === "stats";
+      $("contentView").classList.toggle("hidden", stats);
+      $("statsView").classList.toggle("hidden", !stats);
+      $("swContent").classList.toggle("active", !stats);
+      $("swStats").classList.toggle("active", stats);
+      if (stats && !statsLoaded) { statsLoaded = true; loadStats(); }
+    }
+    $("swContent").onclick = function () { setView("content"); };
+    $("swStats").onclick = function () { setView("stats"); };
+    $("anRefresh").onclick = function () { loadStats(); };
+    $("anRange").onchange = function () { loadStats(); };
+
+    // ---------- ANALITIK ----------
+    var PAGE_LABEL = {
+      "mataram": "Poster Mataram",
+      "mtr-eat": "Eat", "mtr-shop": "Shop", "mtr-play": "Play", "mtr-enjoy": "Enjoy", "unknown": "(lain)"
+    };
+    function nl(p) { return PAGE_LABEL[p] || p || "(lain)"; }
+    function bar(nm, val, max) {
+      var pct = max > 0 ? Math.round(val / max * 100) : 0;
+      return '<div class="bar-row"><span class="nm">' + nm + '</span>' +
+             '<span class="bar-track"><span class="bar-fill" style="width:' + pct + '%"></span></span>' +
+             '<span class="v">' + val + '</span></div>';
+    }
+    function loadStats() {
+      var days = parseInt($("anRange").value, 10) || 30;
+      var since = new Date(Date.now() - days * 86400000).toISOString();
+      $("anInfo").textContent = "memuat…";
+      fetch(SB_URL + "/rest/v1/events?select=type,page,label,created_at&page=in.(mataram,mtr-eat,mtr-shop,mtr-play,mtr-enjoy)&created_at=gte." +
+            encodeURIComponent(since) + "&order=created_at.desc&limit=20000",
+            { headers: { apikey: SB_KEY, Authorization: "Bearer " + token } })
+        .then(function (r) { return r.json(); })
+        .then(function (rows) {
+          if (!Array.isArray(rows)) {
+            $("anInfo").textContent = "";
+            toast("Gagal memuat analitik. Coba login ulang.", false);
+            return;
+          }
+          renderStats(rows);
+          $("anInfo").textContent = rows.length + " event" + (rows.length >= 20000 ? "+ (dibatasi)" : "");
+        })
+        .catch(function () { $("anInfo").textContent = ""; toast("Tidak bisa terhubung.", false); });
+    }
+    function renderStats(rows) {
+      var views = 0, signs = 0, redeem = 0, perPage = {}, perRedeem = {}, daily = {};
+      rows.forEach(function (e) {
+        if (e.type === "view") { views++; perPage[e.page] = (perPage[e.page] || 0) + 1; }
+        else if (e.type === "sign_click") { signs++; }
+        else if (e.type === "redeem_click") {
+          redeem++;
+          var k = (e.label || "(tanpa nama)") + "\u0001" + (e.page || "");
+          perRedeem[k] = (perRedeem[k] || 0) + 1;
+        }
+        if (e.created_at) { var d = e.created_at.slice(0, 10); daily[d] = (daily[d] || 0) + 1; }
+      });
+      $("stViews").textContent = views;
+      $("stSigns").textContent = signs;
+      $("stRedeem").textContent = redeem;
+
+      // per halaman
+      var pg = Object.keys(perPage).map(function (k) { return [k, perPage[k]]; })
+                     .sort(function (a, b) { return b[1] - a[1]; });
+      var pmax = pg.length ? pg[0][1] : 0;
+      $("anPages").innerHTML = pg.length
+        ? pg.map(function (x) { return bar(nl(x[0]), x[1], pmax); }).join("")
+        : '<div class="an-empty">Belum ada kunjungan.</div>';
+
+      // redeem
+      var rd = Object.keys(perRedeem).map(function (k) {
+        var parts = k.split("\u0001"); return { label: parts[0], page: parts[1], n: perRedeem[k] };
+      }).sort(function (a, b) { return b.n - a.n; }).slice(0, 15);
+      $("anRedeem").innerHTML = rd.length
+        ? rd.map(function (x) {
+            return '<tr><td>' + x.label + '</td><td>' + nl(x.page) + '</td><td class="num">' + x.n + '</td></tr>';
+          }).join("")
+        : '<tr><td colspan="3" class="an-empty">Belum ada klik redeem.</td></tr>';
+
+      // 7 hari terakhir
+      var dkeys = [];
+      for (var i = 6; i >= 0; i--) { dkeys.push(new Date(Date.now() - i * 86400000).toISOString().slice(0, 10)); }
+      var dmax = dkeys.reduce(function (m, k) { return Math.max(m, daily[k] || 0); }, 0);
+      $("anDaily").innerHTML = dkeys.map(function (k) {
+        var dd = k.slice(8, 10) + "/" + k.slice(5, 7);
+        return bar(dd, daily[k] || 0, dmax);
+      }).join("");
+    }
+
+    // ---------- FORM ----------
+    var fields = ["category", "merchant", "image", "accent", "title", "intro", "benefit", "extra", "address", "closing", "fineprint"];
+    function fill() {
+      var p = data[current] || {};
+      fields.forEach(function (f) { var el = document.querySelector('[name="' + f + '"]'); if (el) el.value = p[f] == null ? "" : p[f]; });
+      renderRedeem(Array.isArray(p.redeem) ? p.redeem : []);
+      $("viewLink").href = short(current) + ".html";
+      $("formMsg").className = "msg";
+      showPreview();
+      if ($("imgFile")) $("imgFile").value = "";
+    }
+
+    // Preview gambar + upload
+    function showPreview() {
+      var pv = $("imgPreview"); if (!pv) return;
+      var v = document.querySelector('[name="image"]').value;
+      if (v) { pv.src = v; pv.style.display = "block"; } else { pv.style.display = "none"; }
+    }
+    document.querySelector('[name="image"]').addEventListener("input", showPreview);
+
+    function wireUpload() {
+      var ub = $("uploadBtn"); if (!ub) return;
+      ub.onclick = function () {
+        var f = $("imgFile").files[0];
+        if (!f) { toast("Pilih file gambar dulu.", false); return; }
+        if (!token) { toast("Login dulu.", false); return; }
+        var ext = (f.name.split(".").pop() || "jpg").toLowerCase().replace(/[^a-z0-9]/g, "");
+        var path = current + "-" + Date.now() + "." + ext;
+        ub.disabled = true; ub.textContent = "Mengupload…";
+        fetch(SB_URL + "/storage/v1/object/promo/" + path, {
+          method: "POST",
+          headers: { apikey: SB_KEY, Authorization: "Bearer " + token, "x-upsert": "true", "Content-Type": f.type || "application/octet-stream" },
+          body: f
+        }).then(function (r) { return r.json().then(function (j) { return { s: r.status, j: j }; }); })
+          .then(function (res) {
+            ub.disabled = false; ub.textContent = "Upload";
+            if (res.s >= 200 && res.s < 300) {
+              var url = SB_URL + "/storage/v1/object/public/promo/" + path;
+              document.querySelector('[name="image"]').value = url;
+              showPreview();
+              toast("Gambar terupload. Jangan lupa klik Simpan.", true);
+            } else {
+              toast("Upload gagal: " + (res.j.message || res.j.error || res.s), false);
+            }
+          }).catch(function () { ub.disabled = false; ub.textContent = "Upload"; toast("Tidak bisa terhubung.", false); });
+      };
+    }
+    wireUpload();
+    function renderRedeem(list) {
+      $("redeemList").innerHTML = "";
+      list.forEach(function (b) { addRedeemRow(b.label, b.url); });
+      if (!list.length) addRedeemRow("", "");
+    }
+    function addRedeemRow(label, url) {
+      var div = document.createElement("div");
+      div.className = "redeem-item";
+      div.innerHTML = '<input placeholder="teks tombol" value="' + escAttr(label) + '">' +
+                      '<input placeholder="link (https://...)" value="' + escAttr(url) + '">' +
+                      '<button type="button" class="btn-ghost btn-sm">✕</button>';
+      div.querySelector("button").onclick = function () { div.remove(); };
+      $("redeemList").appendChild(div);
+    }
+    $("addRedeem").onclick = function () { addRedeemRow("", ""); };
+    function escAttr(s) { return String(s == null ? "" : s).replace(/"/g, "&quot;"); }
+
+    function collectRedeem() {
+      return Array.prototype.map.call(document.querySelectorAll(".redeem-item"), function (d) {
+        var ins = d.querySelectorAll("input");
+        return { label: ins[0].value.trim(), url: ins[1].value.trim() };
+      }).filter(function (b) { return b.label || b.url; });
+    }
+
+    // ---------- SAVE ----------
+    $("form").addEventListener("submit", function (e) {
+      e.preventDefault();
+      var btn = (e.submitter) || document.querySelector('#form button[type="submit"]');
+      var orig = btn.textContent;
+      btn.disabled = true; btn.textContent = "Menyimpan…";
+      function restore() { btn.disabled = false; btn.textContent = orig; btn.classList.remove("saved"); }
+
+      var body = {};
+      fields.forEach(function (f) { var el = document.querySelector('[name="' + f + '"]'); if (el) body[f] = el.value; });
+      body.redeem = collectRedeem();
+      body.updated_at = new Date().toISOString();
+
+      fetch(SB_URL + "/rest/v1/promos?key=eq." + current, {
+        method: "PATCH",
+        headers: { apikey: SB_KEY, Authorization: "Bearer " + token, "Content-Type": "application/json", Prefer: "return=representation" },
+        body: JSON.stringify(body)
+      }).then(function (r) {
+        if (r.status === 401) { toast("Sesi habis, silakan login lagi.", false); restore(); return null; }
+        return r.json();
+      }).then(function (j) {
+        if (Array.isArray(j) && !j.length) { return insertRow(body); }
+        if (j && j[0]) {
+          data[current] = j[0];
+          toast("Tersimpan! Perubahan " + short(current).toUpperCase() + " langsung aktif.", true);
+          btn.textContent = "✓ Tersimpan"; btn.classList.add("saved");
+          setTimeout(restore, 1500);
+        } else if (j) { toast("Gagal menyimpan.", false); restore(); }
+      }).catch(function () { toast("Tidak bisa terhubung.", false); restore(); });
+    });
+
+    // Baris Mataram belum ada di database -> buat baru (INSERT)
+    function insertRow(body) {
+      body.key = current;
+      body.sort = 20 + keys.indexOf(current);
+      return fetch(SB_URL + "/rest/v1/promos", {
+        method: "POST",
+        headers: { apikey: SB_KEY, Authorization: "Bearer " + token, "Content-Type": "application/json", Prefer: "return=representation" },
+        body: JSON.stringify(body)
+      }).then(function (r) { return r.json(); }).then(function (j) {
+        var btn = document.querySelector('#form button[type="submit"]');
+        btn.disabled = false; btn.textContent = "Simpan";
+        if (j && j[0]) { data[current] = j[0]; toast("Promo " + short(current).toUpperCase() + " dibuat & langsung aktif.", true); }
+        else { toast("Gagal membuat data baru: " + ((j && (j.message || j.hint)) || "cek izin tabel promos"), false); }
+        return null;
+      });
+    }
+
+    // auto-login kalau token masih ada
+    if (token) start("");
+  })();
+  </script>
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>FreeYay! Denpasar – Friday is Your Reward Day! | Telkomsel</title>
+  <meta name="description" content="FreeYay! Telkomsel Denpasar – Friday is Your Reward Day! Merchant Promo Update BaliNusra: Special Offers, Cashback, Rewards, Weekend Picks. Eat, Shop, Play, Enjoy.">
+  <link rel="stylesheet" href="assets/denpasar.css?v=5">
+</head>
+<body>
+  <header class="page-head">
+    <h1>FREEYAY! — best weekend deals special for you !</h1>
+    <p>klik papan kayu untuk best deals minggu ini!</p>
+  </header>
+  <main class="stage">
+    <div class="poster">
+      <img class="poster-img" src="assets/img/poster-denpasar.jpg?v=2"
+           alt="Poster FreeYay! BaliNusra dengan suasana tropis Bali, promo merchant, dan papan petunjuk kayu Eat, Shop, Play, Enjoy.">
+
+      <!-- Toa berdenyut -->
+      <div class="speaker-zoom" aria-hidden="true"></div>
+
+      <!-- Panah merah berkedip -->
+      <img class="cta-arrow" src="assets/img/arrow.svg" alt="" aria-hidden="true" style="left:63%; top:50%; width:14%">
+
+      <!-- Papan kayu: membesar bergantian, dan membesar saat disentuh -->
+      <a class="sign sign-eat"   href="eat.html"   aria-label="Eat"><span class="board"></span><span class="hit"></span></a>
+      <a class="sign sign-shop"  href="shop.html"  aria-label="Shop"><span class="board"></span><span class="hit"></span></a>
+      <a class="sign sign-play"  href="play.html"  aria-label="Play"><span class="board"></span><span class="hit"></span></a>
+      <a class="sign sign-enjoy" href="enjoy.html" aria-label="Enjoy"><span class="board"></span><span class="hit"></span></a>
+
+    </div>
+  </main>
+
+  <section class="promo-copy">
+    <span class="tagline">Setiap Jumat · Telkomsel Poin</span>
+    <h2>Jumat-mu, <span class="hi">Hari Hadiahmu!</span></h2>
+    <p class="lead">Tukar Telkomsel Poin jadi diskon dan reward spesial di merchant pilihan sekitar Denpasar &amp; Bali. Ngopi, main, staycation, sampai perawatan — lebih hemat tiap minggu.</p>
+    <div class="promo-chips">
+      <a class="chip" href="eat.html" style="text-decoration:none">🍽️ Eat</a>
+      <a class="chip" href="shop.html" style="text-decoration:none">🛍️ Shop</a>
+      <a class="chip" href="play.html" style="text-decoration:none">🎢 Play</a>
+      <a class="chip" href="enjoy.html" style="text-decoration:none">💆 Enjoy</a>
+    </div>
+    <a class="cta-main" href="https://my.telkomsel.com/app/loyalty-reward-details/DPSELYS502026" target="_blank" rel="noopener">Cek Semua Promo di MyTelkomsel <span aria-hidden="true">→</span></a>
+    <p class="fineprint">Klik papan kayu pada poster untuk lihat detail tiap promo merchant.</p>
+  </section>
+  <p class="signature">@rlobalnus2026</p>
+
+  <!-- Musik latar: file lagu di assets/audio/musik.mp3 -->
+  <audio id="bg-music" src="assets/audio/musik.mp3?v=4" loop preload="none"></audio>
+  <button class="music-btn" type="button" aria-pressed="false">
+    <span class="eq" aria-hidden="true"><i></i><i></i><i></i></span>
+    <span aria-hidden="true">♫</span> <span class="label">Putar musik</span>
+  </button>
+
+  <script>
+    // Papan membesar bergantian EAT > SHOP > PLAY > ENJOY, lalu jeda 2 detik
+    (function () {
+      if (window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      var signs = [].slice.call(document.querySelectorAll(".sign"));
+      var i = 0;
+      (function next() {
+        signs.forEach(function (s) { s.classList.remove("is-cycling"); });
+        void document.body.offsetWidth; // restart animasi
+        signs[i].classList.add("is-cycling");
+        var last = i === signs.length - 1;
+        i = (i + 1) % signs.length;
+        setTimeout(next, 450 + (last ? 2000 : 0));
+      })();
+    })();
+  </script>
+  <script>window.FY_PAGE = "denpasar";</script>
+  <script src="assets/sb.js"></script>
+  <script src="assets/track.js?v=1"></script>
+  <script src="assets/music.js?v=3"></script>
+</body>
+</html>
