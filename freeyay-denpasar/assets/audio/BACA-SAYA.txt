@@ -1,5 +1,0 @@
-Taruh file lagu di folder ini dengan nama:  musik.mp3
-
-Tombol "Putar musik / Matikan musik" di ketiga halaman otomatis memutar file ini.
-Kalau mau ganti lagu, cukup timpa musik.mp3 dengan lagu lain (nama file tetap sama).
-Saran: ukuran di bawah 3 MB supaya web tetap ringan.
